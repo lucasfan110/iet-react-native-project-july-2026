@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-function Spinner() {
+export function Spinner() {
     return (
         <View>
             <ActivityIndicator size="large" color="#DDD" />
@@ -9,5 +9,3 @@ function Spinner() {
 }
 
 const styles = StyleSheet.create({});
-
-export default Spinner;

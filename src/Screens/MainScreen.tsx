@@ -1,39 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import he from "he";
-import Spinner from "../Components/Spinner";
+import { FeedItem } from "../Components/FeedItem";
+import { Spinner } from "../Components/Spinner";
+import { useFeedData } from "../Hooks/useFeedData";
+import { Feed } from "../Types/Feed";
+import { RootStackParamList } from "../Types/RootStackParamList";
 
-interface Feed {
-    _id: string;
-    title: string;
-    actor: {
-        displayName: string;
-    };
-}
+type MainScreenNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    "Main"
+>;
 
-function MainScreen() {
-    async function fetchAggieFeed() {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const res = await axios.get(
-            "https://aggiefeed.ucdavis.edu/api/v1/activity/public?s=0&l=25",
-        );
-
-        return res.data;
-    }
-
-    const { data, isPending, error, isError } = useQuery<Feed[]>({
-        queryKey: ["aggie-feed"],
-        queryFn: fetchAggieFeed,
-    });
+export function MainScreen() {
+    const navigation = useNavigation<MainScreenNavigationProp>();
+    const { data, isPending, error } = useFeedData();
 
     function renderFeed(feed: Feed) {
         return (
-            <View style={styles.feed}>
-                <Text style={styles.title}>{he.decode(feed.title)}</Text>
-                <Text>{he.decode(feed.actor.displayName)}</Text>
-            </View>
+            <FeedItem
+                feed={feed}
+                onPress={() =>
+                    navigation.navigate("Detail", { feedId: feed._id })
+                }
+            />
         );
     }
 
@@ -57,6 +47,9 @@ function MainScreen() {
                     keyExtractor={data => data._id}
                     renderItem={data => renderFeed(data.item)}
                     style={styles.feedList}
+                    ListEmptyComponent={
+                        <Text>There are no AggieFeed right now!</Text>
+                    }
                 />
             )}
         </View>
@@ -70,13 +63,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    feed: {
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-    },
     feedList: {
         marginHorizontal: 10,
     },
@@ -84,5 +70,3 @@ const styles = StyleSheet.create({
         color: "red",
     },
 });
-
-export default MainScreen;

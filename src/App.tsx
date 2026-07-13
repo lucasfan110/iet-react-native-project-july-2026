@@ -2,20 +2,29 @@ import { createStaticNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StyleSheet } from "react-native";
-import MainScreen from "./Screens/MainScreen";
+import { DetailScreen } from "./Screens/DetailScreen";
+import { MainScreen } from "./Screens/MainScreen";
 
 const queryClient = new QueryClient();
 
 const RootStack = createNativeStackNavigator({
     initialRouteName: "Main",
     screens: {
-        Main: MainScreen,
+        Main: {
+            screen: MainScreen,
+            options: {
+                title: "Home",
+            },
+        },
+        Detail: {
+            screen: DetailScreen,
+        },
     },
 });
 
 const Navigation = createStaticNavigation(RootStack);
 
-export default function App() {
+export function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Navigation />
