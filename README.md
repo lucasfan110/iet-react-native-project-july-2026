@@ -2,7 +2,9 @@
 
 This is a mobile application for viewing AggieFeed, the campus posting system
 for UC Davis. It shows a list of feed, and the user can click on the feed to see
-more details about them.
+more details about them. The details page contains the author, the event type,
+the date published, description of the feed, as well as a link to read more
+about them.
 
 ## Setup
 
@@ -24,3 +26,6 @@ more details about them.
 - [React Query](https://www.npmjs.com/package/@tanstack/react-query)
 - [axios](https://www.npmjs.com/package/axios)
 - [he](https://www.npmjs.com/package/he)
+- [React Native Vector Icons - Ant
+  Design][https://www.npmjs.com/package/@react-native-vector-icons/ant-design]
+- [React Native Render HTML](https://www.npmjs.com/package/react-native-render-html)
