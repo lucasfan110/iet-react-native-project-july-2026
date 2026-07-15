@@ -6,6 +6,7 @@ import { Spinner } from "../Components/Spinner";
 import { useFeedData } from "../Hooks/useFeedData";
 import { Feed } from "../Types/Feed";
 import { RootStackParamList } from "../Types/RootStackParamList";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type MainScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -23,6 +24,7 @@ export function MainScreen() {
                 onPress={() =>
                     navigation.navigate("Detail", { feedId: feed._id })
                 }
+                isEvent={feed.object.objectType === "event"}
             />
         );
     }
@@ -43,6 +45,9 @@ export function MainScreen() {
                 <Spinner />
             ) : (
                 <FlatList
+                    ListHeaderComponent={
+                        <Text style={styles.heading}>AggieFeed</Text>
+                    }
                     data={data ?? []}
                     keyExtractor={data => data._id}
                     renderItem={data => renderFeed(data.item)}
@@ -58,15 +63,19 @@ export function MainScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
     },
     feedList: {
-        marginHorizontal: 10,
+        width: "100%",
+        paddingBottom: 100,
     },
     errorText: {
         color: "red",
+    },
+    heading: {
+        marginVertical: 20,
+        fontSize: 30,
+        fontWeight: "bold",
+        textAlign: "center",
     },
 });

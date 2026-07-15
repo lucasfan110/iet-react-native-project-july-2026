@@ -6,6 +6,16 @@ export interface Feed {
     };
     object: {
         objectType: string;
+        content: string;
+        ucdEdusModel: {
+            url: string;
+            urlDisplayName: string;
+        };
+        event?: {
+            location: string;
+            startDate: string;
+            endDate: string;
+        };
     };
     published: string;
 }

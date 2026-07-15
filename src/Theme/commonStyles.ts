@@ -5,4 +5,8 @@ export const commonStyles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
     },
+    link: {
+        color: "blue",
+        textDecorationLine: "underline",
+    },
 });
