@@ -6,7 +6,6 @@ import { Spinner } from "../Components/Spinner";
 import { useFeedData } from "../Hooks/useFeedData";
 import { Feed } from "../Types/Feed";
 import { RootStackParamList } from "../Types/RootStackParamList";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type MainScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,

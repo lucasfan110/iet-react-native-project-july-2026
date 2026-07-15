@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StyleSheet } from "react-native";
 import { DetailScreen } from "./Screens/DetailScreen";
 import { MainScreen } from "./Screens/MainScreen";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient();
 

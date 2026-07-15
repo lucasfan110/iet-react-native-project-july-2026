@@ -1,14 +1,12 @@
-import { RouteProp } from "@react-navigation/native";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { RootStackParamList } from "../Types/RootStackParamList";
-import { ScreenProps } from "react-native-screens";
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import he from "he";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import RenderHTML from "react-native-render-html";
+import { UrlLink } from "../Components/UrlLink";
 import { useFeedData } from "../Hooks/useFeedData";
 import { commonStyles } from "../Theme/commonStyles";
-import he from "he";
-import AntDesign from "@react-native-vector-icons/ant-design";
-import { UrlLink } from "../Components/UrlLink";
-import RenderHTML from "react-native-render-html";
+import { RootStackParamList } from "../Types/RootStackParamList";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Detail">;
 
@@ -35,13 +33,17 @@ export function DetailScreen({ route }: Props) {
                 {he.decode(specificData.title)}
             </Text>
             <View style={styles.infoRow}>
-                <View style={styles.textWithIcon}>
+                <View style={[styles.textWithIcon, styles.authorNameContainer]}>
                     <AntDesign name="user" color="black" size={20} />
                     <View style={styles.authorNameContainer}>
-                        <Text>{he.decode(specificData.actor.displayName)}</Text>
+                        <Text numberOfLines={2}>
+                            {he.decode(specificData.actor.displayName)}
+                        </Text>
                     </View>
                 </View>
-                <Text>{he.decode(specificData.object.objectType)}</Text>
+                <View style={styles.feedTypeContainer}>
+                    <Text>{he.decode(specificData.object.objectType)}</Text>
+                </View>
             </View>
             <View style={styles.textWithIcon}>
                 <AntDesign name="edit" color="black" size={20} />
@@ -73,17 +75,20 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     infoRow: {
-        display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        gap: 80,
     },
     textWithIcon: {
-        display: "flex",
         flexDirection: "row",
         alignItems: "center",
         gap: 5,
     },
     authorNameContainer: {
-        maxWidth: "70%",
+        flex: 1,
+        flexShrink: 1,
+    },
+    feedTypeContainer: {
+        flexShrink: 0,
     },
 });
