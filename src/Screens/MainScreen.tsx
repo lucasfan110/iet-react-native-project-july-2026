@@ -45,7 +45,9 @@ export function MainScreen() {
             ) : (
                 <FlatList
                     ListHeaderComponent={
-                        <Text style={styles.heading}>AggieFeed</Text>
+                        <Text style={styles.heading}>
+                            Welcome to AggieFeed!
+                        </Text>
                     }
                     data={data ?? []}
                     keyExtractor={data => data._id}

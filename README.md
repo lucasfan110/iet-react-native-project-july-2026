@@ -26,6 +26,18 @@ about them.
 - [React Query](https://www.npmjs.com/package/@tanstack/react-query)
 - [axios](https://www.npmjs.com/package/axios)
 - [he](https://www.npmjs.com/package/he)
-- [React Native Vector Icons - Ant
-  Design][https://www.npmjs.com/package/@react-native-vector-icons/ant-design]
+    - Used for decoding HTML entities that sometimes appear in a feed's title
+- [React Native Vector Icons - Ant Design](https://www.npmjs.com/package/@react-native-vector-icons/ant-design)
 - [React Native Render HTML](https://www.npmjs.com/package/react-native-render-html)
+    - Used for rendering the description of a feed, since sometimes they contain
+      HTML tags such as `<a></a>`
+
+## Known Issues or Limitations
+
+- The `MainScreen` only fetches 25 feed for now. I would've plan on adding
+  features like "load more" and pagination, given more time.
+- The `DetailScreen` only shows a subset of all the information available. I
+  would want to add more detailed information, such as the timeline, if the feed
+  is an event, etc.
+- Other nice-to-have features such as pull to refresh and button to refetch on
+  error, instead of user needing to reopen the app when they encounter an error.
