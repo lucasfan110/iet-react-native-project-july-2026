@@ -6,11 +6,11 @@ import RenderHTML from "react-native-render-html";
 import { UrlLink } from "../Components/UrlLink";
 import { useFeedData } from "../Hooks/useFeedData";
 import { commonStyles } from "../Theme/commonStyles";
-import { RootStackParamList } from "../Types/RootStackParamList";
+import { FeedStackParamList } from "../Types/FeedStackParamList";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Detail">;
+type Props = NativeStackScreenProps<FeedStackParamList, "Detail">;
 
-export function DetailScreen({ route }: Props) {
+export function FeedDetailScreen({ route }: Props) {
     const { feedId } = route.params;
     const { data } = useFeedData();
     const { width } = useWindowDimensions();

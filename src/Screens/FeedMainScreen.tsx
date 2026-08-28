@@ -5,15 +5,15 @@ import { FeedItem } from "../Components/FeedItem";
 import { Spinner } from "../Components/Spinner";
 import { useFeedData } from "../Hooks/useFeedData";
 import { Feed } from "../Types/Feed";
-import { RootStackParamList } from "../Types/RootStackParamList";
+import { FeedStackParamList } from "../Types/FeedStackParamList";
 
-type MainScreenNavigationProp = NativeStackNavigationProp<
-    RootStackParamList,
+type FeedMainScreenNavigationProp = NativeStackNavigationProp<
+    FeedStackParamList,
     "Main"
 >;
 
-export function MainScreen() {
-    const navigation = useNavigation<MainScreenNavigationProp>();
+export function FeedMainScreen() {
+    const navigation = useNavigation<FeedMainScreenNavigationProp>();
     const { data, isPending, error } = useFeedData();
 
     function renderFeed(feed: Feed) {

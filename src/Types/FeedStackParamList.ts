@@ -1,4 +1,4 @@
-export type RootStackParamList = {
+export type FeedStackParamList = {
     Main: undefined;
     Detail: {
         feedId: string;
