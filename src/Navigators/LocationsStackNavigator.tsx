@@ -10,11 +10,14 @@ const Stack = createNativeStackNavigator<LocationsStackParamList>();
 
 export function LocationsStackNavigator() {
     return (
-        <Stack.Navigator initialRouteName="Main">
+        <Stack.Navigator
+            initialRouteName="Main"
+            screenOptions={{ headerShown: false }}
+        >
             <Stack.Screen
                 name="Main"
                 component={LocationsMainScreen}
-                options={{ title: "Locations" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="Detail"

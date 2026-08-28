@@ -6,11 +6,13 @@ import { Feed } from "../Types/Feed";
 
 interface Props {
     feed: Feed;
-    onPress: () => void;
+    onPress?: () => void;
     isEvent?: boolean;
 }
 
 export function FeedItem({ feed, onPress, isEvent = false }: Props) {
+    const publishedDate = new Date(feed.published).toLocaleDateString();
+
     return (
         <Pressable onPress={onPress}>
             <View style={styles.feedContainer}>
@@ -29,13 +31,16 @@ export function FeedItem({ feed, onPress, isEvent = false }: Props) {
                             )}
                             {he.decode(feed.title)}
                         </Text>
-                        <Text>{he.decode(feed.actor.displayName)}</Text>
-                    </View>
-                    <View>
                         <Text>
-                            <AntDesign name="arrow-right" color="black" />
+                            {he.decode(feed.actor.displayName)} ({publishedDate}
+                            )
                         </Text>
                     </View>
+                </View>
+                <View>
+                    <Text style={styles.arrowText}>
+                        <AntDesign name="arrow-right" color="black" />
+                    </Text>
                 </View>
             </View>
         </Pressable>
@@ -45,15 +50,23 @@ export function FeedItem({ feed, onPress, isEvent = false }: Props) {
 const styles = StyleSheet.create({
     feedContainer: {
         justifyContent: "center",
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        marginBottom: 30,
+        borderBottomWidth: 1,
+        borderBottomColor: "#333",
     },
     feed: {
-        marginBottom: 20,
+        marginBottom: 10,
         flexDirection: "row",
         alignItems: "center",
-        marginHorizontal: 20,
+        // marginHorizontal: 20,
         justifyContent: "space-between",
     },
     feedContent: {
-        width: "80%",
+        width: "100%",
+    },
+    arrowText: {
+        textAlign: "right",
     },
 });

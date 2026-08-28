@@ -6,6 +6,8 @@ import { Spinner } from "../Components/Spinner";
 import { useFeedData } from "../Hooks/useFeedData";
 import { Feed } from "../Types/Feed";
 import { FeedStackParamList } from "../Types/FeedStackParamList";
+import { AGGIE_BLUE, commonStyles } from "../Theme/commonStyles";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 type FeedMainScreenNavigationProp = NativeStackNavigationProp<
     FeedStackParamList,
@@ -15,6 +17,7 @@ type FeedMainScreenNavigationProp = NativeStackNavigationProp<
 export function FeedMainScreen() {
     const navigation = useNavigation<FeedMainScreenNavigationProp>();
     const { data, isPending, error } = useFeedData();
+    const tabBarHeight = useBottomTabBarHeight();
 
     function renderFeed(feed: Feed) {
         return (
@@ -30,8 +33,8 @@ export function FeedMainScreen() {
 
     if (error) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>
+            <View style={commonStyles.whiteBackground}>
+                <Text style={commonStyles.errorText}>
                     Failed to load AggieFeed (Error: {error?.message})
                 </Text>
             </View>
@@ -39,44 +42,46 @@ export function FeedMainScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles.page}>
             {isPending ? (
                 <Spinner />
             ) : (
-                <FlatList
-                    ListHeaderComponent={
-                        <Text style={styles.heading}>
-                            Welcome to AggieFeed!
-                        </Text>
-                    }
-                    data={data ?? []}
-                    keyExtractor={data => data._id}
-                    renderItem={data => renderFeed(data.item)}
-                    style={styles.feedList}
-                    ListEmptyComponent={
-                        <Text>There are no AggieFeed right now!</Text>
-                    }
-                />
+                <View>
+                    <Text style={[commonStyles.h2, styles.heading]}>
+                        AggieFeed
+                    </Text>
+
+                    <FlatList
+                        data={data ?? []}
+                        keyExtractor={data => data._id}
+                        renderItem={data => renderFeed(data.item)}
+                        contentContainerStyle={[
+                            styles.feedList,
+                            // { paddingBottom: tabBarHeight },
+                        ]}
+                        ListEmptyComponent={
+                            <Text>There are no AggieFeed right now!</Text>
+                        }
+                    />
+                </View>
             )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: "#fff",
-    },
     feedList: {
         width: "100%",
-        paddingBottom: 100,
-    },
-    errorText: {
-        color: "red",
+        paddingBottom: 300,
+        paddingTop: 40,
+        backgroundColor: "white",
     },
     heading: {
-        marginVertical: 20,
-        fontSize: 30,
-        fontWeight: "bold",
-        textAlign: "center",
+        paddingTop: 50,
+        paddingBottom: 20,
+        color: "white",
+    },
+    page: {
+        backgroundColor: AGGIE_BLUE,
     },
 });
