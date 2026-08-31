@@ -26,3 +26,4 @@ export const commonStyles = StyleSheet.create({
 });
 
 export const AGGIE_BLUE = "#022851";
+export const AGGIE_GOLD = "#FFBF00";

@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Feed } from "../Types/Feed";
 import { LocationBlock } from "../Types/Locations";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid/non-secure";
 
 async function fetchLocations(): Promise<LocationBlock[]> {
-    // await new Promise(resolve => setTimeout(resolve, 2000));
+    // await new Promise(resolve => {
+    //     setTimeout(resolve, 2000);
+    // });
 
     const campusMap = axios.get(
         "https://mobile.ucdavis.edu/api/v2/locations/campus-map",
@@ -28,7 +30,7 @@ async function fetchLocations(): Promise<LocationBlock[]> {
 
     for (const locationBlock of allLocationsData) {
         for (const location of locationBlock.locations) {
-            location.id = uuidv4();
+            location.id = nanoid();
         }
     }
 

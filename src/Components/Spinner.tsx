@@ -1,8 +1,18 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    StyleProp,
+    StyleSheet,
+    View,
+    ViewStyle,
+} from "react-native";
 
-export function Spinner() {
+interface Props {
+    style?: StyleProp<ViewStyle>;
+}
+
+export function Spinner({ style }: Props) {
     return (
-        <View>
+        <View style={style}>
             <ActivityIndicator size="large" color="#DDD" />
         </View>
     );

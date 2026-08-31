@@ -33,8 +33,8 @@ export function LocationsDetailScreen({ route }: Props) {
                     initialRegion={{
                         latitude: latNum,
                         longitude: lngNum,
-                        latitudeDelta: 0.02,
-                        longitudeDelta: 0.02,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
                     }}
                 >
                     <MapMarker

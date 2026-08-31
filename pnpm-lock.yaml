@@ -38,6 +38,9 @@ importers:
       he:
         specifier: ^1.2.0
         version: 1.2.0
+      nanoid:
+        specifier: ^6.0.1
+        version: 6.0.1
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -56,9 +59,6 @@ importers:
       react-native-screens:
         specifier: 4.26.2
         version: 4.26.2(react-native@0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.2.3)(supports-color@8.1.1))(react@19.2.3)
-      uuid:
-        specifier: ^14.0.2
-        version: 14.0.2
     devDependencies:
       '@types/he':
         specifier: ^1.2.3
@@ -1873,6 +1873,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@6.0.1:
+    resolution: {integrity: sha512-3wVS3i51pE2pi1k5FFL/95BGfVS0kSsvDVuGXHOtxox/TywUmtgq+3qiTOTbs9J7KfHaXPiN171k/A6dBnaXFw==}
+    engines: {node: ^22 || ^24 || >=26}
+    hasBin: true
+
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
@@ -2384,10 +2389,6 @@ packages:
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
-
-  uuid@14.0.2:
-    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
-    hasBin: true
 
   uuid@7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
@@ -4743,6 +4744,8 @@ snapshots:
 
   nanoid@3.3.15: {}
 
+  nanoid@6.0.1: {}
+
   negotiator@0.6.3: {}
 
   negotiator@0.6.4: {}
@@ -5234,8 +5237,6 @@ snapshots:
       react: 19.2.3
 
   utils-merge@1.0.1: {}
-
-  uuid@14.0.2: {}
 
   uuid@7.0.3: {}
 
