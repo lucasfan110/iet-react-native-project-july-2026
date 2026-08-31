@@ -19,6 +19,10 @@ export const commonStyles = StyleSheet.create({
     whiteBackground: {
         backgroundColor: "#fff",
     },
+    debug: {
+        borderWidth: 1,
+        boxSizing: "border-box",
+    },
 });
 
 export const AGGIE_BLUE = "#022851";

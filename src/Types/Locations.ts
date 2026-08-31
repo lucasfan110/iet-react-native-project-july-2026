@@ -1,4 +1,5 @@
 export interface LocationData {
+    id: string;
     name: string;
     abbr: string;
     lat: string;

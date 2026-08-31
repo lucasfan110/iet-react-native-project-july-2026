@@ -30,7 +30,12 @@ export function LocationsMainScreen() {
             <LocationItem
                 location={location}
                 onPress={() => {
-                    console.log(`Clicked ${location.name}`);
+                    navigation.navigate("Detail", {
+                        name: location.name,
+                        lat: location.lat,
+                        lng: location.lng,
+                        link: location.link,
+                    });
                 }}
             />
         );
@@ -59,9 +64,7 @@ export function LocationsMainScreen() {
                     </View>
                     <FlatList
                         data={flattenedLocations?.slice(0, 50) ?? []}
-                        keyExtractor={data => {
-                            return data.lat?.concat(data.lng);
-                        }}
+                        keyExtractor={data => data.id}
                         renderItem={data => renderLocation(data.item)}
                         contentContainerStyle={[styles.locationsList]}
                         ListEmptyComponent={

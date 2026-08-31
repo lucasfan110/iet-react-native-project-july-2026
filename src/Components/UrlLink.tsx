@@ -1,10 +1,20 @@
-import { Linking, Pressable, StyleSheet, Text } from "react-native";
+import {
+    Linking,
+    Pressable,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextStyle,
+} from "react-native";
 import { commonStyles } from "../Theme/commonStyles";
+import React from "react";
 
 interface Props {
-    displayText?: string;
+    children?: React.ReactNode;
     href: string;
+    style?: StyleProp<TextStyle>;
 }
+
 async function openUrl(url: string) {
     const supported = await Linking.canOpenURL(url);
 
@@ -15,17 +25,17 @@ async function openUrl(url: string) {
     }
 }
 
-export function UrlLink({ displayText, href }: Props) {
-    let displayContent: string;
-    if (!displayText) {
+export function UrlLink({ children, href, style }: Props) {
+    let displayContent: React.ReactNode;
+    if (!children) {
         displayContent = href;
     } else {
-        displayContent = displayText;
+        displayContent = children;
     }
 
     return (
         <Pressable onPress={() => openUrl(href)}>
-            <Text style={commonStyles.link}>{displayContent}</Text>
+            <Text style={[commonStyles.link, style]}>{displayContent}</Text>
         </Pressable>
     );
 }

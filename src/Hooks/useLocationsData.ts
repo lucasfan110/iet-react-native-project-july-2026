@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Feed } from "../Types/Feed";
 import { LocationBlock } from "../Types/Locations";
+import { v4 as uuidv4 } from "uuid";
 
 async function fetchLocations(): Promise<LocationBlock[]> {
     // await new Promise(resolve => setTimeout(resolve, 2000));
@@ -24,6 +25,12 @@ async function fetchLocations(): Promise<LocationBlock[]> {
         name: "Study Spots",
         locations: allLocationsDataRaw[1].data,
     });
+
+    for (const locationBlock of allLocationsData) {
+        for (const location of locationBlock.locations) {
+            location.id = uuidv4();
+        }
+    }
 
     return allLocationsData;
 }

@@ -58,12 +58,9 @@ export function FeedDetailScreen({ route }: Props) {
                 }}
             />
 
-            <UrlLink
-                displayText={he.decode(
-                    specificData.object.ucdEdusModel.urlDisplayName,
-                )}
-                href={specificData.object.ucdEdusModel.url}
-            />
+            <UrlLink href={specificData.object.ucdEdusModel.url}>
+                {he.decode(specificData.object.ucdEdusModel.urlDisplayName)}
+            </UrlLink>
         </View>
     );
 }
