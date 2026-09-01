@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     },
     websiteText: {
         fontSize: 16,
+        marginRight: 40,
     },
     headerContainer: {
         paddingTop: 40,

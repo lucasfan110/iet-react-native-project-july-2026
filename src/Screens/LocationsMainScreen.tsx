@@ -1,47 +1,98 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useMemo, useRef, useState } from "react";
-import {
-    FlatList,
-    Pressable,
-    ScrollView,
-    SectionList,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { LoadingText } from "../Components/LoadingText";
 import { LocationItem } from "../Components/LocationItem";
+import Pagination from "../Components/Pagination";
+import SearchBar from "../Components/SearchBar";
 import { Spinner } from "../Components/Spinner";
 import { useLocationsData } from "../Hooks/useLocationsData";
-import { AGGIE_BLUE, AGGIE_GOLD, commonStyles } from "../Theme/commonStyles";
+import { AGGIE_BLUE, commonStyles } from "../Theme/commonStyles";
 import { LocationData } from "../Types/Locations";
 import { LocationsStackParamList } from "../Types/LocationsStackParamList";
-import { LoadingText } from "../Components/LoadingText";
-import Pagination from "../Components/Pagination";
 
 type LocationsMainScreenNavigationProp = NativeStackNavigationProp<
     LocationsStackParamList,
     "Main"
 >;
 
+function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findAllMatches(haystack: string, userInput: string): number[] {
+    const regex = new RegExp(escapeRegex(userInput), "gi"); // g = global, i = case-insensitive
+    return [...haystack.matchAll(regex)].map(m => m.index);
+}
+
 const ITEMS_PER_PAGE = 50;
+const TIME_MS_TILL_AUTOMATIC_SEARCH = 500;
 
 export function LocationsMainScreen() {
     const navigation = useNavigation<LocationsMainScreenNavigationProp>();
     const { data, isPending, error } = useLocationsData();
     const scrollViewRef = useRef<ScrollView>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const currentSearchTimerId = useRef<number | null>(null);
+    // Item id as key, indices of highlight as value
+    const textMatchInfo = useRef<Map<string, number[]>>(new Map());
 
     const flattenedLocations = useMemo(() => {
-        return data?.flatMap(block => block.locations);
+        return data?.flatMap(block => block.locations) ?? [];
     }, [data]);
+
+    const [currentlyDisplayedLocations, setCurrentlyDisplayedLocations] =
+        useState<LocationData[]>([]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const totalPage = Math.ceil(
-        (flattenedLocations?.length || 1) / ITEMS_PER_PAGE,
+        (currentlyDisplayedLocations?.length || 1) / ITEMS_PER_PAGE,
     );
+
+    useEffect(() => {
+        if (searchQuery === "") {
+            search("");
+            clearTimeout(currentSearchTimerId.current);
+        } else {
+            currentSearchTimerId.current = setTimeout(
+                () => search(searchQuery),
+                TIME_MS_TILL_AUTOMATIC_SEARCH,
+            );
+        }
+
+        return () => clearTimeout(currentSearchTimerId.current);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        setCurrentlyDisplayedLocations(flattenedLocations);
+        search("");
+    }, flattenedLocations);
 
     function scrollToTop() {
         scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+    }
+
+    function search(searchQuery: string) {
+        textMatchInfo.current.clear();
+
+        if (searchQuery === "") {
+            setCurrentlyDisplayedLocations(flattenedLocations);
+            return;
+        }
+
+        const filteredDisplayData: LocationData[] = [];
+
+        for (const location of flattenedLocations) {
+            const indices = findAllMatches(location.name, searchQuery);
+
+            if (indices.length > 0) {
+                textMatchInfo.current.set(location.id, indices);
+                filteredDisplayData.push(location);
+            }
+        }
+
+        setCurrentlyDisplayedLocations(filteredDisplayData);
     }
 
     function renderLocation(location: LocationData) {
@@ -88,7 +139,16 @@ export function LocationsMainScreen() {
                     <LoadingText />
                 </View>
             ) : (
-                <View>
+                <View style={styles.mainContainer}>
+                    <SearchBar
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        containerStyle={styles.searchBar}
+                        onSubmit={query => {
+                            clearTimeout(currentSearchTimerId.current);
+                            search(query);
+                        }}
+                    />
                     {/* <FlatList
                         data={flattenedLocations?.slice(0, 50) ?? []}
                         keyExtractor={data => data.id}
@@ -99,9 +159,9 @@ export function LocationsMainScreen() {
                         }
                     /> */}
                     <View style={styles.locationsList}>
-                        {flattenedLocations
-                            ?.slice(50 * (currentPage - 1), 50 * currentPage)
-                            ?.map(data => renderLocation(data))}
+                        {currentlyDisplayedLocations
+                            .slice(50 * (currentPage - 1), 50 * currentPage)
+                            .map(data => renderLocation(data))}
                     </View>
                     <View style={styles.footer}>
                         <Pagination
@@ -146,5 +206,11 @@ const styles = StyleSheet.create({
     footer: {
         backgroundColor: "white",
         paddingVertical: 20,
+    },
+    mainContainer: {
+        backgroundColor: "white",
+    },
+    searchBar: {
+        marginVertical: 10,
     },
 });

@@ -24,7 +24,7 @@ export function LocationItem({ location, onPress }: Props) {
                     </View>
                     <View>
                         <Text>
-                            <AntDesign name="arrow-right" color="black" />
+                            <AntDesign name="environment" color="black" />
                         </Text>
                     </View>
                 </View>

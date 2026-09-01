@@ -141,7 +141,7 @@ export default function Pagination({
         >
             {showPrevNext && (
                 <NavButton
-                    label="‹"
+                    label="<"
                     accessibilityLabel="Previous page"
                     onPress={() => goTo(currentPage - 1)}
                     enabled={canGoPrev}
@@ -188,7 +188,7 @@ export default function Pagination({
 
             {showPrevNext && (
                 <NavButton
-                    label="›"
+                    label=">"
                     accessibilityLabel="Next page"
                     onPress={() => goTo(currentPage + 1)}
                     enabled={canGoNext}
