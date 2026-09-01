@@ -72,7 +72,11 @@ export function LocationsMainScreen() {
     }
 
     return (
-        <ScrollView style={styles.page} ref={scrollViewRef}>
+        <ScrollView
+            style={styles.page}
+            ref={scrollViewRef}
+            contentContainerStyle={{ flexGrow: 1 }}
+        >
             <View>
                 <Text style={[commonStyles.h2, styles.title]}>
                     Locations Directory
@@ -137,6 +141,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         gap: 10,
         backgroundColor: "white",
+        flex: 1,
     },
     footer: {
         backgroundColor: "white",
