@@ -23,6 +23,9 @@ export const commonStyles = StyleSheet.create({
         borderWidth: 1,
         boxSizing: "border-box",
     },
+    bold: {
+        fontWeight: "bold",
+    },
 });
 
 export const AGGIE_BLUE = "#022851";

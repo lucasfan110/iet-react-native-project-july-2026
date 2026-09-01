@@ -96,6 +96,16 @@ export function LocationsMainScreen() {
     }
 
     function renderLocation(location: LocationData) {
+        const textBoldInfo: { start: number; stop: number }[] = [];
+
+        const info = textMatchInfo.current.get(location.id) ?? [];
+        for (const index of info) {
+            textBoldInfo.push({
+                start: index,
+                stop: index + searchQuery.length,
+            });
+        }
+
         return (
             <LocationItem
                 key={location.id}
@@ -108,6 +118,7 @@ export function LocationsMainScreen() {
                         link: location.link,
                     });
                 }}
+                boldOn={textBoldInfo}
             />
         );
     }
