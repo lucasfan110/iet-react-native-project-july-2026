@@ -1,7 +1,14 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import { LoadingText } from "../Components/LoadingText";
 import { LocationItem } from "../Components/LocationItem";
 import Pagination from "../Components/Pagination";
@@ -26,17 +33,17 @@ function findAllMatches(haystack: string, userInput: string): number[] {
     return [...haystack.matchAll(regex)].map(m => m.index);
 }
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 25;
 const TIME_MS_TILL_AUTOMATIC_SEARCH = 500;
 
 export function LocationsMainScreen() {
     const navigation = useNavigation<LocationsMainScreenNavigationProp>();
     const { data, isPending, error } = useLocationsData();
-    const scrollViewRef = useRef<ScrollView>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const currentSearchTimerId = useRef<number | null>(null);
     // Item id as key, indices of highlight as value
     const textMatchInfo = useRef<Map<string, number[]>>(new Map());
+    const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
     const flattenedLocations = useMemo(() => {
         return data?.flatMap(block => block.locations) ?? [];
@@ -44,11 +51,6 @@ export function LocationsMainScreen() {
 
     const [currentlyDisplayedLocations, setCurrentlyDisplayedLocations] =
         useState<LocationData[]>([]);
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPage = Math.ceil(
-        (currentlyDisplayedLocations?.length || 1) / ITEMS_PER_PAGE,
-    );
 
     useEffect(() => {
         if (searchQuery === "") {
@@ -68,10 +70,6 @@ export function LocationsMainScreen() {
         setCurrentlyDisplayedLocations(flattenedLocations);
         search("");
     }, [flattenedLocations]);
-
-    function scrollToTop() {
-        scrollViewRef.current?.scrollTo({ y: 0, animated: false });
-    }
 
     function search(searchQuery: string) {
         textMatchInfo.current.clear();
@@ -123,6 +121,33 @@ export function LocationsMainScreen() {
         );
     }
 
+    function loadMore() {
+        if (visibleCount < flattenedLocations.length) {
+            setVisibleCount(prev =>
+                Math.min(
+                    visibleCount + ITEMS_PER_PAGE,
+                    flattenedLocations.length,
+                ),
+            );
+        }
+    }
+
+    function onPageScroll({
+        nativeEvent,
+    }: NativeSyntheticEvent<NativeScrollEvent>) {
+        const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+
+        const paddingToBottom = 200;
+
+        const isCloseToBottom =
+            layoutMeasurement.height + contentOffset.y >=
+            contentSize.height - paddingToBottom;
+
+        if (isCloseToBottom) {
+            loadMore();
+        }
+    }
+
     if (error) {
         return (
             <View style={commonStyles.whiteBackground}>
@@ -148,9 +173,10 @@ export function LocationsMainScreen() {
                 />
             </View>
             <ScrollView
-                ref={scrollViewRef}
                 contentContainerStyle={{ flexGrow: 1 }}
                 style={styles.scrollView}
+                onScroll={onPageScroll}
+                scrollEventThrottle={16}
             >
                 {isPending ? (
                     <View style={[styles.spinnerContainer]}>
@@ -161,18 +187,8 @@ export function LocationsMainScreen() {
                     <View style={styles.mainContainer}>
                         <View style={styles.locationsList}>
                             {currentlyDisplayedLocations
-                                .slice(50 * (currentPage - 1), 50 * currentPage)
+                                .slice(0, visibleCount)
                                 .map(data => renderLocation(data))}
-                        </View>
-                        <View style={styles.footer}>
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPage}
-                                onPageChange={page => {
-                                    setCurrentPage(page);
-                                    scrollToTop();
-                                }}
-                            />
                         </View>
                     </View>
                 )}
@@ -204,10 +220,6 @@ const styles = StyleSheet.create({
         gap: 10,
         backgroundColor: "white",
         flex: 1,
-    },
-    footer: {
-        backgroundColor: "white",
-        paddingVertical: 20,
     },
     mainContainer: {
         backgroundColor: "white",
