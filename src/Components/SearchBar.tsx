@@ -10,6 +10,7 @@ import {
     TextInputProps,
     ViewStyle,
 } from "react-native";
+import { AGGIE_BLUE_LIGHTER } from "../Theme/commonStyles";
 
 export interface SearchBarProps {
     /** Current search text — keep this controlled from the parent/hook */
@@ -74,7 +75,6 @@ export default function SearchBar({
                 {loading ? (
                     <ActivityIndicator size="small" style={styles.icon} />
                 ) : (
-                    // <Text style={styles.icon}>🔍</Text>
                     <AntDesign name="search" style={styles.icon} />
                 )}
 
@@ -127,19 +127,20 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#F2F2F7",
         borderRadius: 10,
         paddingHorizontal: 10,
         height: 40,
+        backgroundColor: AGGIE_BLUE_LIGHTER,
     },
     icon: {
-        marginRight: 6,
-        fontSize: 16,
+        marginRight: 20,
+        fontSize: 20,
+        color: "white",
     },
     input: {
         flex: 1,
         fontSize: 16,
-        color: "#000",
+        color: "white",
         padding: 0, // avoid Android default vertical padding
     },
     clearIcon: {

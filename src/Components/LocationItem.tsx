@@ -2,6 +2,7 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { commonStyles } from "../Theme/commonStyles";
 import { LocationData } from "../Types/Locations";
+import { useMemo } from "react";
 
 interface StartStopIndex {
     start: number;
@@ -18,36 +19,49 @@ interface Props {
 }
 
 export function LocationItem({ location, onPress, boldOn }: Props) {
-    const textSegments: { text: string; bold: boolean }[] = [];
+    const textSegments = useMemo(() => {
+        const segments: { text: string; bold: boolean }[] = [];
 
-    if (boldOn && boldOn.length > 0) {
-        let lastCutIndex = 0;
+        if (boldOn && boldOn.length > 0) {
+            let lastCutIndex = 0;
 
-        for (const boldRange of boldOn) {
-            textSegments.push({
-                text: location.name.slice(lastCutIndex, boldRange.start),
+            for (const boldRange of boldOn) {
+                segments.push({
+                    text: location.name.slice(lastCutIndex, boldRange.start),
+                    bold: false,
+                });
+                segments.push({
+                    text: location.name.slice(boldRange.start, boldRange.stop),
+                    bold: true,
+                });
+
+                lastCutIndex = boldRange.stop;
+            }
+
+            segments.push({
+                text: location.name.slice(lastCutIndex),
                 bold: false,
             });
-            textSegments.push({
-                text: location.name.slice(boldRange.start, boldRange.stop),
-                bold: true,
-            });
-
-            lastCutIndex = boldRange.stop;
+        } else {
+            segments.push({ text: location.name, bold: false });
         }
 
-        textSegments.push({
-            text: location.name.slice(lastCutIndex),
-            bold: false,
-        });
-    } else {
-        textSegments.push({ text: location.name, bold: false });
-    }
+        return segments;
+    }, [boldOn, location.name]);
 
     return (
         <Pressable onPress={onPress}>
             <View style={[styles.locationContainer]}>
                 <View style={styles.location}>
+                    <View>
+                        <Text>
+                            <AntDesign
+                                name="environment"
+                                color="black"
+                                size={20}
+                            />
+                        </Text>
+                    </View>
                     <View style={styles.locationContent}>
                         {/* <Text style={styles.name}>{location.name}</Text> */}
                         {textSegments.map((text, index) => (
@@ -62,11 +76,6 @@ export function LocationItem({ location, onPress, boldOn }: Props) {
                             </Text>
                         ))}
                     </View>
-                    <View>
-                        <Text>
-                            <AntDesign name="environment" color="black" />
-                        </Text>
-                    </View>
                 </View>
             </View>
         </Pressable>
@@ -80,12 +89,14 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderBottomWidth: 2,
         borderBottomColor: "#222",
+        // marginHorizontal: 20,
     },
     location: {
         flexDirection: "row",
         alignItems: "center",
         marginHorizontal: 20,
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
+        gap: 20,
     },
     locationContent: {
         width: "80%",

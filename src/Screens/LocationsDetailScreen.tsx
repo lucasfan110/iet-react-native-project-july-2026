@@ -117,11 +117,12 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         paddingTop: 40,
-        paddingBottom: 20,
+        // paddingBottom: 20,
         backgroundColor: AGGIE_BLUE,
     },
     backButton: {
-        paddingVertical: 10,
+        // paddingVertical: 10,
+        paddingTop: 10,
         paddingHorizontal: 10,
     },
 });

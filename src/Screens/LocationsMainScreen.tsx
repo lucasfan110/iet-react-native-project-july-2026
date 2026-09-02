@@ -67,7 +67,7 @@ export function LocationsMainScreen() {
     useEffect(() => {
         setCurrentlyDisplayedLocations(flattenedLocations);
         search("");
-    }, flattenedLocations);
+    }, [flattenedLocations]);
 
     function scrollToTop() {
         scrollViewRef.current?.scrollTo({ y: 0, animated: false });
@@ -134,59 +134,50 @@ export function LocationsMainScreen() {
     }
 
     return (
-        <ScrollView
-            style={styles.page}
-            ref={scrollViewRef}
-            contentContainerStyle={{ flexGrow: 1 }}
-        >
-            <View>
-                <Text style={[commonStyles.h2, styles.title]}>
-                    Locations Directory
-                </Text>
+        <View style={styles.page}>
+            <View style={styles.header}>
+                <SearchBar
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    containerStyle={styles.searchBar}
+                    onSubmit={query => {
+                        clearTimeout(currentSearchTimerId.current);
+                        search(query);
+                    }}
+                    placeholder="Search locations"
+                />
             </View>
-            {isPending ? (
-                <View style={[styles.spinnerContainer]}>
-                    <Spinner />
-                    <LoadingText />
-                </View>
-            ) : (
-                <View style={styles.mainContainer}>
-                    <SearchBar
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        containerStyle={styles.searchBar}
-                        onSubmit={query => {
-                            clearTimeout(currentSearchTimerId.current);
-                            search(query);
-                        }}
-                    />
-                    {/* <FlatList
-                        data={flattenedLocations?.slice(0, 50) ?? []}
-                        keyExtractor={data => data.id}
-                        renderItem={data => renderLocation(data.item)}
-                        contentContainerStyle={[styles.locationsList]}
-                        ListEmptyComponent={
-                            <Text>There are no locations right now!</Text>
-                        }
-                    /> */}
-                    <View style={styles.locationsList}>
-                        {currentlyDisplayedLocations
-                            .slice(50 * (currentPage - 1), 50 * currentPage)
-                            .map(data => renderLocation(data))}
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={{ flexGrow: 1 }}
+                style={styles.scrollView}
+            >
+                {isPending ? (
+                    <View style={[styles.spinnerContainer]}>
+                        <Spinner />
+                        <LoadingText />
                     </View>
-                    <View style={styles.footer}>
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPage}
-                            onPageChange={page => {
-                                setCurrentPage(page);
-                                scrollToTop();
-                            }}
-                        />
+                ) : (
+                    <View style={styles.mainContainer}>
+                        <View style={styles.locationsList}>
+                            {currentlyDisplayedLocations
+                                .slice(50 * (currentPage - 1), 50 * currentPage)
+                                .map(data => renderLocation(data))}
+                        </View>
+                        <View style={styles.footer}>
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPage}
+                                onPageChange={page => {
+                                    setCurrentPage(page);
+                                    scrollToTop();
+                                }}
+                            />
+                        </View>
                     </View>
-                </View>
-            )}
-        </ScrollView>
+                )}
+            </ScrollView>
+        </View>
     );
 }
 
@@ -220,8 +211,12 @@ const styles = StyleSheet.create({
     },
     mainContainer: {
         backgroundColor: "white",
+        flex: 1,
     },
     searchBar: {
-        marginVertical: 10,
+        marginTop: 70,
+        marginBottom: 30,
     },
+    header: {},
+    scrollView: {},
 });
