@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
     NativeScrollEvent,
     NativeSyntheticEvent,
+    Pressable,
     ScrollView,
     StyleSheet,
     Text,
@@ -18,6 +19,7 @@ import { useLocationsData } from "../Hooks/useLocationsData";
 import { AGGIE_BLUE, commonStyles } from "../Theme/commonStyles";
 import { LocationBlock, LocationData } from "../Types/Locations";
 import { LocationsStackParamList } from "../Types/LocationsStackParamList";
+import * as SQLite from "expo-sqlite";
 
 type LocationsMainScreenNavigationProp = NativeStackNavigationProp<
     LocationsStackParamList,
@@ -75,7 +77,6 @@ export function LocationsMainScreen() {
     }, [currentlyDisplayedData]);
 
     function search(searchQuery: string) {
-        console.log(`Searching with query "${searchQuery}"...`);
         textMatchInfo.current.clear();
 
         if (searchQuery === "") {
@@ -193,6 +194,13 @@ export function LocationsMainScreen() {
                         }}
                         placeholder="Search locations"
                     />
+                    {/* <Pressable
+                        onPress={async () => {
+                            await SQLite.deleteDatabaseAsync("app.db");
+                        }}
+                    >
+                        <Text>Delete database</Text>
+                    </Pressable> */}
                 </View>
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1 }}
