@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     NativeScrollEvent,
     NativeSyntheticEvent,
@@ -9,14 +9,14 @@ import {
     Text,
     View,
 } from "react-native";
+import CollapsibleSection from "../Components/CollapsibleSection";
 import { LoadingText } from "../Components/LoadingText";
 import { LocationItem } from "../Components/LocationItem";
-import Pagination from "../Components/Pagination";
 import SearchBar from "../Components/SearchBar";
 import { Spinner } from "../Components/Spinner";
 import { useLocationsData } from "../Hooks/useLocationsData";
 import { AGGIE_BLUE, commonStyles } from "../Theme/commonStyles";
-import { LocationData } from "../Types/Locations";
+import { LocationBlock, LocationData } from "../Types/Locations";
 import { LocationsStackParamList } from "../Types/LocationsStackParamList";
 
 type LocationsMainScreenNavigationProp = NativeStackNavigationProp<
@@ -33,7 +33,7 @@ function findAllMatches(haystack: string, userInput: string): number[] {
     return [...haystack.matchAll(regex)].map(m => m.index);
 }
 
-const ITEMS_PER_PAGE = 25;
+const ITEMS_PER_PAGE = 20;
 const TIME_MS_TILL_AUTOMATIC_SEARCH = 500;
 
 export function LocationsMainScreen() {
@@ -44,13 +44,12 @@ export function LocationsMainScreen() {
     // Item id as key, indices of highlight as value
     const textMatchInfo = useRef<Map<string, number[]>>(new Map());
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+    const dataOrEmpty = data ?? [];
+    const [isRendering, setIsRendering] = useState(false);
 
-    const flattenedLocations = useMemo(() => {
-        return data?.flatMap(block => block.locations) ?? [];
-    }, [data]);
-
-    const [currentlyDisplayedLocations, setCurrentlyDisplayedLocations] =
-        useState<LocationData[]>([]);
+    const [currentlyDisplayedData, setCurrentlyDisplayedData] = useState<
+        LocationBlock[]
+    >([]);
 
     useEffect(() => {
         if (searchQuery === "") {
@@ -67,30 +66,48 @@ export function LocationsMainScreen() {
     }, [searchQuery]);
 
     useEffect(() => {
-        setCurrentlyDisplayedLocations(flattenedLocations);
-        search("");
-    }, [flattenedLocations]);
+        setCurrentlyDisplayedData(dataOrEmpty);
+        search(searchQuery);
+    }, [data]);
+
+    useEffect(() => {
+        setIsRendering(false);
+    }, [currentlyDisplayedData]);
 
     function search(searchQuery: string) {
+        console.log(`Searching with query "${searchQuery}"...`);
         textMatchInfo.current.clear();
 
         if (searchQuery === "") {
-            setCurrentlyDisplayedLocations(flattenedLocations);
+            setCurrentlyDisplayedData(dataOrEmpty);
+            setIsRendering(true);
             return;
         }
 
-        const filteredDisplayData: LocationData[] = [];
+        const filteredDisplayData: LocationBlock[] = [];
 
-        for (const location of flattenedLocations) {
-            const indices = findAllMatches(location.name, searchQuery);
+        for (const locationBlock of dataOrEmpty) {
+            const filteredLocations: LocationData[] = [];
 
-            if (indices.length > 0) {
-                textMatchInfo.current.set(location.id, indices);
-                filteredDisplayData.push(location);
+            for (const location of locationBlock.locations) {
+                const indices = findAllMatches(location.name, searchQuery);
+
+                if (indices.length > 0) {
+                    textMatchInfo.current.set(location.id, indices);
+                    filteredLocations.push(location);
+                }
+            }
+
+            if (filteredLocations.length > 0) {
+                filteredDisplayData.push({
+                    name: locationBlock.name,
+                    locations: filteredLocations,
+                });
             }
         }
 
-        setCurrentlyDisplayedLocations(filteredDisplayData);
+        setIsRendering(true);
+        setCurrentlyDisplayedData(filteredDisplayData);
     }
 
     function renderLocation(location: LocationData) {
@@ -122,12 +139,9 @@ export function LocationsMainScreen() {
     }
 
     function loadMore() {
-        if (visibleCount < flattenedLocations.length) {
+        if (visibleCount < dataOrEmpty.length) {
             setVisibleCount(prev =>
-                Math.min(
-                    visibleCount + ITEMS_PER_PAGE,
-                    flattenedLocations.length,
-                ),
+                Math.min(visibleCount + ITEMS_PER_PAGE, dataOrEmpty.length),
             );
         }
     }
@@ -159,41 +173,64 @@ export function LocationsMainScreen() {
     }
 
     return (
-        <View style={styles.page}>
-            <View style={styles.header}>
-                <SearchBar
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    containerStyle={styles.searchBar}
-                    onSubmit={query => {
-                        clearTimeout(currentSearchTimerId.current);
-                        search(query);
-                    }}
-                    placeholder="Search locations"
-                />
-            </View>
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                style={styles.scrollView}
-                onScroll={onPageScroll}
-                scrollEventThrottle={16}
-            >
-                {isPending ? (
-                    <View style={[styles.spinnerContainer]}>
-                        <Spinner />
-                        <LoadingText />
-                    </View>
-                ) : (
-                    <View style={styles.mainContainer}>
-                        <View style={styles.locationsList}>
-                            {currentlyDisplayedLocations
-                                .slice(0, visibleCount)
-                                .map(data => renderLocation(data))}
+        <>
+            {/* {isRendering && <Spinner style={styles.searchSpinner} />} */}
+            {isRendering && (
+                <View style={styles.searchSpinner}>
+                    <Spinner />
+                    <LoadingText text="Searching" />
+                </View>
+            )}
+            <View style={styles.page}>
+                <View style={styles.header}>
+                    <SearchBar
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        containerStyle={styles.searchBar}
+                        onSubmit={query => {
+                            clearTimeout(currentSearchTimerId.current);
+                            search(query);
+                        }}
+                        placeholder="Search locations"
+                    />
+                </View>
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    style={styles.scrollView}
+                    // onScroll={onPageScroll}
+                    // scrollEventThrottle={16}
+                >
+                    {isPending ? (
+                        <View style={[styles.spinnerContainer]}>
+                            <Spinner />
+                            <LoadingText text="Loading" />
                         </View>
-                    </View>
-                )}
-            </ScrollView>
-        </View>
+                    ) : (
+                        <View style={styles.mainContainer}>
+                            {currentlyDisplayedData
+                                .slice(0, visibleCount)
+                                .map(locationBlock => (
+                                    <CollapsibleSection
+                                        title={locationBlock.name}
+                                        key={locationBlock.name}
+                                    >
+                                        <View style={styles.locationsList}>
+                                            {locationBlock.locations.map(data =>
+                                                renderLocation(data),
+                                            )}
+                                        </View>
+                                    </CollapsibleSection>
+                                    // <View style={styles.locationsList}>
+                                    //     {locationBlock.locations.map(data =>
+                                    //         renderLocation(data),
+                                    //     )}
+                                    // </View>
+                                ))}
+                        </View>
+                    )}
+                </ScrollView>
+            </View>
+        </>
     );
 }
 
@@ -231,4 +268,14 @@ const styles = StyleSheet.create({
     },
     header: {},
     scrollView: {},
+    searchSpinner: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 10,
+    },
 });
